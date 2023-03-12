@@ -1,18 +1,20 @@
 #include <vector>
 #include <iostream>
 #include <thread>
+#include <math.h>
 #include <utimer.cpp>
 
 using namespace std;
 
 auto f = [] ( int x ){ return x*x; };
+auto g = [] (double x) { for(int i=0; i<1000; i++) x = x+1; return(x); };
 
 auto body(vector<int> v, vector<int> *w, int start, int end, int threadId){
     long usecs; 
     {
         // utimer t0(&usecs, threadId); 
         for(int i=start; i<end; i++){
-                (*w)[i] = f(v[i]);
+                (*w)[i] = g(v[i]);
         }
     }
 }
