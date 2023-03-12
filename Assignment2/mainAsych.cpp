@@ -1,17 +1,18 @@
 #include <vector>
 #include <iostream>
 #include <thread>
+#include <future>
 #include <utimer.cpp>
 
 using namespace std;
 
 auto f = [] ( int x ){ return x*x; };
 
-auto body(vector<double> *vec, int start, int end, int threadId)
+auto body(vector<double> *vec, int start, int end)
 {
     {
-        // long usecs;
-        // utimer t0(&usecs, threadId);
+        long usecs;
+        utimer t0("Asynch Thread ", &usecs);
         for (int i=start; i<end; i++)
         {
             (*vec)[i] = f((*vec)[i]);
@@ -32,10 +33,9 @@ int main(int argc, char* argv[]){
     int s = (argc > 2 ? atoi(argv[2]) : 123); // seed 
     int threshold = (argc > 3 ? atoi(argv[3]) : 10); // threshold to split
     bool pf=(argc > 4 ? (argv[4][0]=='t' ? true : false) : true);  
-    int threads = (argc > 5 ? atoi(argv[5]) : -1); // threads to split
     
-    vector<double> v(vec_len);
     vector<double> w(vec_len);
+    vector<double> v(vec_len);
     const int max = 8; 
     srand(s); 
     for(int i=0; i<vec_len; i++){   
@@ -43,22 +43,19 @@ int main(int argc, char* argv[]){
         w[i] = v[i];
     }
 
-    vector<thread*> tids;   
     long usecs; 
     {
         utimer t0("Computation",&usecs); 
         int start,end = 0;
-        int bucket = (threads)? vec_len/threshold : threads;
-        for (int i = 0;  i<((threads==-1)? bucket : threads); i++){
+        int bucket = vec_len/threshold;
+        for (int i = 0;  i<bucket; i++){
             start = i*bucket;
             end = (vec_len < start+bucket)? vec_len : start + bucket;
-            tids.push_back(new thread(body, &v, start, end, i));
+            auto threadsRes = async(launch::async, body, &v, start, end);
         }
-        threads = tids.size();
-        for(auto t : tids) t->join();
     }
 
-    cout << "End (spent " << usecs << " usecs using " << threads << " threads for " << vec_len << " elements)" << endl;
+    cout << "End (spent " << usecs << " usecs for " << vec_len << " elements)" << endl;
     if(pf)                                    // print results (if needed)
         for(int i=0; i<vec_len; i++) cout <<i<<": "<< w[i]<<" -> "<< v[i] << endl;
 }
