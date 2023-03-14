@@ -14,7 +14,7 @@ auto body(vector<int> v, vector<int> *w, int start, int end, int threadId){
     {
         // utimer t0(&usecs, threadId); 
         for(int i=start; i<end; i++){
-                (*w)[i] = g(v[i]);
+                (*w)[i] = f(v[i]);
         }
     }
 }
