@@ -1,6 +1,5 @@
 #include <vector>
 #include <iostream>
-#include <thread>
 #include <future>
 #include <utimer.cpp>
 
@@ -32,7 +31,7 @@ int main(int argc, char* argv[]){
     int vec_len = (argc > 1 ? atoi(argv[1]) : 100);  // len of the vector(s)
     int s = (argc > 2 ? atoi(argv[2]) : 123); // seed 
     int threshold = (argc > 3 ? atoi(argv[3]) : 10); // threshold to split
-    bool pf=(argc > 4 ? (argv[4][0]=='t' ? true : false) : true);  
+    bool pf= argc > 4 && argv[4][0] == 't';
     
     vector<double> w(vec_len);
     vector<double> v(vec_len);

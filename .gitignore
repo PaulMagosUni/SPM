@@ -1,6 +1,3 @@
-.vscode/
 *.DS_Store
-*output
-*.dSYM
-main
-main2
+.idea/
+cmake-build-debug
